@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Welfare Open Door</title>
+<style>
+:root{--bg:#fbf8f2;--card:#fff;--ink:#1d2a2a;--mute:#5c6b6b;--accent:#0f6b5c;--accent-ink:#fff;--line:#e2dccf;--warn:#b4531a;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121a19;--card:#1b2625;--ink:#eef2f0;--mute:#9db0ad;--accent:#3fc2a7;--accent-ink:#0b1514;--line:#2c3b39;--warn:#f0a066}}
+:root[data-theme="dark"]{--bg:#121a19;--card:#1b2625;--ink:#eef2f0;--mute:#9db0ad;--accent:#3fc2a7;--accent-ink:#0b1514;--line:#2c3b39;--warn:#f0a066}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Georgia,"Times New Roman",serif;line-height:1.55}
+.wrap{max-width:640px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:2rem;line-height:1.15;margin:.2em 0}
+.tag{color:var(--mute);font-style:italic;margin:0 0 18px}
+.badge{display:inline-block;background:var(--accent);color:var(--accent-ink);font:600 .75rem system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;padding:4px 10px;border-radius:99px}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:18px 0;font:.8rem system-ui,sans-serif;text-align:center}
+.steps div{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 4px}
+.steps b{display:block;color:var(--accent);font-size:1.1rem}
+form,.done{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+label{display:block;font:600 .9rem system-ui,sans-serif;margin:14px 0 5px}
+input,select,textarea{width:100%;font:1rem system-ui,sans-serif;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px}
+textarea{min-height:100px}
+.chk{display:flex;gap:10px;align-items:flex-start;font:.92rem system-ui,sans-serif;margin-top:14px}
+.chk input{width:auto;margin-top:4px}
+.urgent{color:var(--warn)}
+button,.btn{display:block;text-align:center;text-decoration:none;font:600 1rem system-ui,sans-serif;border:0;border-radius:10px;padding:13px 18px;cursor:pointer;background:var(--accent);color:var(--accent-ink);width:100%;margin-top:18px}
+button.alt,.btn.alt{background:transparent;color:var(--accent);border:1px solid var(--accent);margin-top:10px}
+.note{font:.82rem system-ui,sans-serif;color:var(--mute);margin-top:14px}
+.code{font:700 1.6rem ui-monospace,Menlo,monospace;color:var(--accent);letter-spacing:.04em;margin:6px 0}
+.warnbox{background:var(--bg);border:1px solid var(--warn);border-radius:8px;padding:10px 12px;font:.92rem system-ui,sans-serif;margin:12px 0}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="badge">Student initiative</span>
+  <h1>Welfare Open Door</h1>
+  <p class="tag">Every student, every complaint, every update.</p>
+  <p>Report a welfare problem in your hostel or on campus. Each complaint gets a tracking number, is verified, and is forwarded through the proper office.</p>
+
+  <div class="steps"><div><b>1</b>Received</div><div><b>2</b>Verified</div><div><b>3</b>Forwarded</div><div><b>4</b>Resolved</div></div>
+
+  <form id="f">
+    <label for="type">What type of issue is it?</label>
+    <select id="type" required>
+      <option value="">Choose one…</option>
+      <option>Water supply</option><option>Electricity</option><option>Toilets</option>
+      <option>Mosquitoes and pest control</option><option>Room nets, wardrobes and furniture</option>
+      <option>Network and internet</option><option>Health Center</option><option>Food and canteen</option>
+      <option>Sports and recreation</option><option>Other</option>
+    </select>
+
+    <label for="where">Hostel or location</label>
+    <select id="where" required>
+      <option value="">Choose one…</option>
+      <option>Ibadan Hostel</option><option>JAH Hostel</option><option>Lagos Hostel</option>
+      <option>University Male Hostel</option><option>University Female Hostel</option><option>DLW</option>
+      <option>Goshen Inn</option><option>Grace Hostel</option><option>Male Premium Hostel</option>
+      <option>Female Premium Hostel</option><option>Off-campus</option><option>Campus (not a hostel)</option>
+    </select>
+
+    <label for="room">Room or block number</label>
+    <input id="room" placeholder="Optional if it is not a room issue">
+
+    <label for="desc">Describe the problem</label>
+    <textarea id="desc" placeholder="What is wrong, since when, and how many people it affects?" required></textarea>
+
+    <label for="dur">How long has this been going on?</label>
+    <select id="dur"><option>Today</option><option>2 to 7 days</option><option>1 to 4 weeks</option><option>Over a month</option></select>
+
+    <label for="rep">Has it been reported to hostel management before?</label>
+    <select id="rep"><option>No</option><option>Yes</option><option>Not sure</option></select>
+    <div id="respWrap" hidden>
+      <label for="resp">What was the response?</label>
+      <input id="resp">
+    </div>
+
+    <label class="chk urgent"><input type="checkbox" id="urgent"> <span>This affects my health or safety right now. (For a medical emergency, also go straight to the Health Center or security.)</span></label>
+    <label class="chk"><input type="checkbox" id="conf"> <span>Keep my name confidential. It will not be used in any report.</span></label>
+
+    <label for="name">Your name</label>
+    <input id="name" autocomplete="name" required>
+
+    <label for="level">Level and department (optional)</label>
+    <input id="level" placeholder="e.g. 200 level, Nursing">
+
+    <label for="phone">Phone or WhatsApp number</label>
+    <input id="phone" type="tel" autocomplete="tel" required>
+    <p class="note" style="margin-top:6px">Used only to send you updates on this complaint.</p>
+
+    <button type="submit">Get my tracking number</button>
+    <p class="note">Please keep it honest and respectful: no rumors or personal attacks. Only the Welfare Office team sees your details.</p>
+  </form>
+
+  <div class="done" id="done" hidden>
+    <b>Your tracking number</b>
+    <div class="code" id="code"></div>
+    <div class="warnbox"><b>Your complaint is not sent yet.</b> Tap <b>Continue to the form</b> below. Your answers are already filled in. Check them, then press <b>Submit</b> in the form.</div>
+    <a id="gf" class="btn" href="#" target="_blank" rel="noopener">Continue to the form</a>
+    <button class="alt" id="copy">Copy my tracking number</button>
+    <a id="wa" class="btn alt" href="#" target="_blank" rel="noopener">Want to send photos? Message us on WhatsApp</a>
+    <button class="alt" id="again">Report another issue</button>
+  </div>
+
+  <a id="prog" class="btn alt" href="#" target="_blank" rel="noopener" hidden>Check progress of my complaint</a>
+
+  <p class="note">This is a student initiative and not yet an official ACUSA or university system. Complaints are verified and forwarded through the proper offices.</p>
+</div>
+<script>
+var FORM = "https://docs.google.com/forms/d/e/1FAIpQLScOYJPPzJ0C9-uMh2v5w4e8RF0T6bLSxTY6acWVFmlFah_wcg/viewform";
+var WHATSAPP_NUMBER = "2349075728798";
+var PROGRESS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vREMfuJ5iyjFimx3uq2Rgh47pTyyLNV0KdRbn91j-MpzubhkdunrUMo6yQ8z788Uu1ac9OGs6RHfoBZ/pubhtml?gid=1463033685&single=true";
+var $ = function(id){ return document.getElementById(id); };
+if (PROGRESS_URL) { $("prog").href = PROGRESS_URL; $("prog").hidden = false; }
+var code = "";
+function makeCode(){
+  var d = new Date(), p = function(n){ return String(n).padStart(2,"0"); };
+  return "WOD-" + String(d.getFullYear()).slice(2) + p(d.getMonth()+1) + p(d.getDate()) + "-" + (Math.floor(Math.random()*9000)+1000);
+}
+$("rep").addEventListener("change", function(){ $("respWrap").hidden = $("rep").value !== "Yes"; });
+$("f").addEventListener("submit", function(e){
+  e.preventDefault();
+  code = makeCode();
+  var q = [];
+  function add(k, v){ if (v) q.push("entry." + k + "=" + encodeURIComponent(v)); }
+  add("559919258", code);
+  add("984298404", $("type").value);
+  add("527877894", $("where").value);
+  add("1327046161", $("room").value);
+  add("1119875686", $("desc").value);
+  add("1799501700", $("dur").value);
+  add("1731117592", $("rep").value);
+  add("1986339754", $("rep").value === "Yes" ? $("resp").value : "");
+  if ($("urgent").checked) add("518072746", "This affects my health or safety right now");
+  add("466367494", $("conf").checked ? "Yes, keep my name confidential" : "No, you may use my name");
+  add("2095539584", $("name").value);
+  add("201971084", $("level").value);
+  add("1826501893", $("phone").value);
+  $("gf").href = FORM + "?usp=pp_url&" + q.join("&");
+  var wa = "Welfare Open Door\nTracking: " + code + "\nPhotos for my complaint (" + $("type").value + ", " + $("where").value + ")";
+  $("wa").href = "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(wa);
+  $("code").textContent = code;
+  $("f").hidden = true; $("done").hidden = false;
+  window.scrollTo(0,0);
+});
+$("copy").addEventListener("click", function(){
+  try { navigator.clipboard.writeText(code).then(function(){ $("copy").textContent = "Copied"; }); }
+  catch(err){ $("copy").textContent = "Write down: " + code; }
+});
+$("again").addEventListener("click", function(){
+  $("f").reset(); $("respWrap").hidden = true; $("f").hidden = false; $("done").hidden = true; $("copy").textContent = "Copy my tracking number";
+});
+</script>
+</body>
+</html>
