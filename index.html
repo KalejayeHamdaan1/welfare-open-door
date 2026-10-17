@@ -29,6 +29,7 @@ button,.btn{display:block;text-align:center;text-decoration:none;font:600 1rem s
 button.alt,.btn.alt{background:transparent;color:var(--accent);border:1px solid var(--accent);margin-top:10px}
 .note{font:.82rem system-ui,sans-serif;color:var(--mute);margin-top:14px}
 .code{font:700 1.6rem ui-monospace,Menlo,monospace;color:var(--accent);letter-spacing:.04em;margin:6px 0}
+.track{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-top:22px}
 .warnbox{background:var(--bg);border:1px solid var(--warn);border-radius:8px;padding:10px 12px;font:.92rem system-ui,sans-serif;margin:12px 0}
 [hidden]{display:none!important}
 </style>
@@ -39,19 +40,20 @@ button.alt,.btn.alt{background:transparent;color:var(--accent);border:1px solid 
   <h1>Welfare Open Door</h1>
   <p class="tag">Every student, every complaint, every update.</p>
   <p>Report a welfare problem in your hostel or on campus. Each complaint gets a tracking number, is verified, and is forwarded through the proper office.</p>
-
+ 
   <div class="steps"><div><b>1</b>Received</div><div><b>2</b>Verified</div><div><b>3</b>Forwarded</div><div><b>4</b>Resolved</div></div>
-
+ 
   <form id="f">
     <label for="type">What type of issue is it?</label>
     <select id="type" required>
       <option value="">Choose one…</option>
       <option>Water supply</option><option>Electricity</option><option>Toilets</option>
-      <option>Mosquitoes and pest control</option><option>Room nets, wardrobes and furniture</option>
-      <option>Network and internet</option><option>Health Center</option><option>Food and canteen</option>
+      <option>Windows and doors (including wardrobe, net and bed)</option>
+      <option>Mosquitoes and pest control</option><option>Network and internet</option>
+      <option>Health</option><option>Food and canteen</option>
       <option>Sports and recreation</option><option>Other</option>
     </select>
-
+ 
     <label for="where">Hostel or location</label>
     <select id="where" required>
       <option value="">Choose one…</option>
@@ -60,40 +62,40 @@ button.alt,.btn.alt{background:transparent;color:var(--accent);border:1px solid 
       <option>Goshen Inn</option><option>Grace Hostel</option><option>Male Premium Hostel</option>
       <option>Female Premium Hostel</option><option>Off-campus</option><option>Campus (not a hostel)</option>
     </select>
-
+ 
     <label for="room">Room or block number</label>
     <input id="room" placeholder="Optional if it is not a room issue">
-
+ 
     <label for="desc">Describe the problem</label>
     <textarea id="desc" placeholder="What is wrong, since when, and how many people it affects?" required></textarea>
-
+ 
     <label for="dur">How long has this been going on?</label>
     <select id="dur"><option>Today</option><option>2 to 7 days</option><option>1 to 4 weeks</option><option>Over a month</option></select>
-
+ 
     <label for="rep">Has it been reported to hostel management before?</label>
     <select id="rep"><option>No</option><option>Yes</option><option>Not sure</option></select>
     <div id="respWrap" hidden>
       <label for="resp">What was the response?</label>
       <input id="resp">
     </div>
-
+ 
     <label class="chk urgent"><input type="checkbox" id="urgent"> <span>This affects my health or safety right now. (For a medical emergency, also go straight to the Health Center or security.)</span></label>
     <label class="chk"><input type="checkbox" id="conf"> <span>Keep my name confidential. It will not be used in any report.</span></label>
-
+ 
     <label for="name">Your name</label>
     <input id="name" autocomplete="name" required>
-
+ 
     <label for="level">Level and department (optional)</label>
     <input id="level" placeholder="e.g. 200 level, Nursing">
-
+ 
     <label for="phone">Phone or WhatsApp number</label>
     <input id="phone" type="tel" autocomplete="tel" required>
     <p class="note" style="margin-top:6px">Used only to send you updates on this complaint.</p>
-
+ 
     <button type="submit">Get my tracking number</button>
     <p class="note">Please keep it honest and respectful: no rumors or personal attacks. Only the Welfare Office team sees your details.</p>
   </form>
-
+ 
   <div class="done" id="done" hidden>
     <b>Your tracking number</b>
     <div class="code" id="code"></div>
@@ -103,10 +105,18 @@ button.alt,.btn.alt{background:transparent;color:var(--accent);border:1px solid 
     <a id="wa" class="btn alt" href="#" target="_blank" rel="noopener">Want to send photos? Message us on WhatsApp</a>
     <button class="alt" id="again">Report another issue</button>
   </div>
-
+ 
+  <div class="track" id="trackBox">
+    <b>Track my complaint</b>
+    <label for="tq" style="margin-top:10px">Your tracking number</label>
+    <input id="tq" placeholder="e.g. WOD-261017-4821" autocomplete="off" autocapitalize="characters">
+    <button type="button" id="tbtn">Check status</button>
+    <p id="tres" class="note" role="status"></p>
+  </div>
+ 
   <a id="prog" class="btn alt" href="#" target="_blank" rel="noopener" hidden>Check progress of my complaint</a>
-
-  <p class="note">This is a student initiative and not yet an official ACUSA or university system. Complaints are verified and forwarded through the proper offices.</p>
+ 
+  <p class="note">This is a student initiative. Complaints are verified and forwarded through the proper offices.</p>
 </div>
 <script>
 var FORM = "https://docs.google.com/forms/d/e/1FAIpQLScOYJPPzJ0C9-uMh2v5w4e8RF0T6bLSxTY6acWVFmlFah_wcg/viewform";
@@ -152,6 +162,44 @@ $("copy").addEventListener("click", function(){
 $("again").addEventListener("click", function(){
   $("f").reset(); $("respWrap").hidden = true; $("f").hidden = false; $("done").hidden = true; $("copy").textContent = "Copy my tracking number";
 });
+ 
+var CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vREMfuJ5iyjFimx3uq2Rgh47pTyyLNV0KdRbn91j-MpzubhkdunrUMo6yQ8z788Uu1ac9OGs6RHfoBZ/pub?gid=1463033685&single=true&output=csv";
+function parseCSV(t){
+  var rows = [], row = [], cur = "", q = false, i, c;
+  for (i = 0; i < t.length; i++) {
+    c = t[i];
+    if (q) { if (c === '"' && t[i+1] === '"') { cur += '"'; i++; } else if (c === '"') { q = false; } else { cur += c; } }
+    else if (c === '"') { q = true; }
+    else if (c === ",") { row.push(cur); cur = ""; }
+    else if (c === "\n") { row.push(cur); rows.push(row); row = []; cur = ""; }
+    else if (c !== "\r") { cur += c; }
+  }
+  if (cur !== "" || row.length) { row.push(cur); rows.push(row); }
+  return rows;
+}
+function checkStatus(){
+  var out = $("tres"), id = $("tq").value.trim().toUpperCase();
+  if (!id) { out.textContent = "Please type your tracking number first."; return; }
+  out.textContent = "Checking…";
+  fetch(CSV_URL + "&t=" + Date.now()).then(function(r){
+    if (!r.ok) throw new Error("bad");
+    return r.text();
+  }).then(function(t){
+    var rows = parseCSV(t), found = null, i;
+    for (i = 0; i < rows.length; i++) {
+      if ((rows[i][0] || "").trim().toUpperCase() === id) { found = rows[i]; break; }
+    }
+    if (found) {
+      out.textContent = "Status: " + (found[3] || "Awaiting review") + "  |  " + (found[2] || "") + "  |  " + (found[1] || "");
+    } else {
+      out.textContent = "We could not find that number yet. Check the spelling, and note that updates can take a few minutes to appear.";
+    }
+  }).catch(function(){
+    out.textContent = "Could not load the progress list right now. Please use the Check progress button below instead.";
+  });
+}
+$("tbtn").addEventListener("click", checkStatus);
+$("tq").addEventListener("keydown", function(e){ if (e.key === "Enter") { e.preventDefault(); checkStatus(); } });
 </script>
 </body>
 </html>
