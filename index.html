@@ -235,11 +235,15 @@ function setSteps(level){
   }
 }
 try { var saved = localStorage.getItem("wodCode"); if (saved) { $("tq").value = saved; } } catch(e) {}
-if (location.hash === "#track") {
-  $("f").hidden = true; $("newrep").hidden = false;
-  document.getElementById("trackBox").scrollIntoView();
-  if ($("tq").value) { checkStatus(); }
+function applyTrackMode(){
+  if (location.hash === "#track") {
+    $("f").hidden = true; $("done").hidden = true; $("newrep").hidden = false;
+    document.getElementById("trackBox").scrollIntoView();
+    if ($("tq").value) { checkStatus(); }
+  }
 }
+applyTrackMode();
+window.addEventListener("hashchange", applyTrackMode);
 $("newrep").addEventListener("click", function(){ $("f").hidden = false; $("newrep").hidden = true; history.replaceState(null, "", location.pathname); });
 </script>
 </body>
