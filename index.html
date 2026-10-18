@@ -30,6 +30,14 @@ button.alt,.btn.alt{background:transparent;color:var(--accent);border:1px solid 
 .note{font:.82rem system-ui,sans-serif;color:var(--mute);margin-top:14px}
 .code{font:700 1.6rem ui-monospace,Menlo,monospace;color:var(--accent);letter-spacing:.04em;margin:6px 0}
 .track{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-top:22px}
+.stp{margin-top:18px}
+.stp .row{display:flex;align-items:flex-start}
+.stp .seg{flex:1;height:5px;margin-top:12px;border-radius:3px;background:var(--line)}
+.stp .seg.lead{flex:0 0 22px}
+.stp .node{display:flex;flex-direction:column;align-items:center;width:62px;font:.72rem system-ui,sans-serif;color:var(--mute);text-align:center}
+.stp .circle{width:29px;height:29px;border-radius:50%;background:var(--line);color:var(--mute);display:flex;align-items:center;justify-content:center;font:700 .85rem system-ui,sans-serif;margin-bottom:5px}
+.stp .seg.on,.stp .circle.on{background:#2e9e5b;color:#fff}
+.stp .node.on{color:var(--ink);font-weight:600}
 .warnbox{background:var(--bg);border:1px solid var(--warn);border-radius:8px;padding:10px 12px;font:.92rem system-ui,sans-serif;margin:12px 0}
 [hidden]{display:none!important}
 </style>
@@ -111,7 +119,20 @@ button.alt,.btn.alt{background:transparent;color:var(--accent);border:1px solid 
     <label for="tq" style="margin-top:10px">Your tracking number</label>
     <input id="tq" placeholder="e.g. WOD-261017-4821" autocomplete="off" autocapitalize="characters">
     <button type="button" id="tbtn">Check status</button>
+    <div class="stp" id="stp" hidden>
+      <div class="row">
+        <div class="seg lead" data-i="0"></div>
+        <div class="node" data-i="0"><div class="circle">1</div>Received</div>
+        <div class="seg" data-i="1"></div>
+        <div class="node" data-i="1"><div class="circle">2</div>Verified</div>
+        <div class="seg" data-i="2"></div>
+        <div class="node" data-i="2"><div class="circle">3</div>Forwarded</div>
+        <div class="seg" data-i="3"></div>
+        <div class="node" data-i="3"><div class="circle">4</div>Resolved</div>
+      </div>
+    </div>
     <p id="tres" class="note" role="status"></p>
+    <button type="button" class="alt" id="newrep" hidden>Report a new issue</button>
   </div>
  
   <a id="prog" class="btn alt" href="#" target="_blank" rel="noopener" hidden>Check progress of my complaint</a>
@@ -132,7 +153,7 @@ function makeCode(){
 $("rep").addEventListener("change", function(){ $("respWrap").hidden = $("rep").value !== "Yes"; });
 $("f").addEventListener("submit", function(e){
   e.preventDefault();
-  code = makeCode();
+  code = makeCode(); try { localStorage.setItem("wodCode", code); } catch(e) {}
   var q = [];
   function add(k, v){ if (v) q.push("entry." + k + "=" + encodeURIComponent(v)); }
   add("559919258", code);
@@ -180,7 +201,7 @@ function parseCSV(t){
 function checkStatus(){
   var out = $("tres"), id = $("tq").value.trim().toUpperCase();
   if (!id) { out.textContent = "Please type your tracking number first."; return; }
-  out.textContent = "Checking…";
+  out.textContent = "Checking…"; $("stp").hidden = true;
   fetch(CSV_URL + "&t=" + Date.now()).then(function(r){
     if (!r.ok) throw new Error("bad");
     return r.text();
@@ -190,7 +211,11 @@ function checkStatus(){
       if ((rows[i][0] || "").trim().toUpperCase() === id) { found = rows[i]; break; }
     }
     if (found) {
-      out.textContent = "Status: " + (found[3] || "Awaiting review") + "  |  " + (found[2] || "") + "  |  " + (found[1] || "");
+      var st = (found[3] || "").trim();
+      var lv = {received:1, verified:2, forwarded:3, resolved:4}[st.toLowerCase()] || 0;
+      setSteps(lv);
+      $("stp").hidden = false;
+      out.textContent = (st || "Awaiting review") + " · " + (found[2] || "") + " · " + (found[1] || "");
     } else {
       out.textContent = "We could not find that number yet. Check the spelling, and note that updates can take a few minutes to appear.";
     }
@@ -200,6 +225,22 @@ function checkStatus(){
 }
 $("tbtn").addEventListener("click", checkStatus);
 $("tq").addEventListener("keydown", function(e){ if (e.key === "Enter") { e.preventDefault(); checkStatus(); } });
+ 
+function setSteps(level){
+  var segs = document.querySelectorAll("#stp .seg"), nodes = document.querySelectorAll("#stp .node"), i;
+  for (i = 0; i < segs.length; i++) { segs[i].classList.toggle("on", level > i); }
+  for (i = 0; i < nodes.length; i++) {
+    nodes[i].classList.toggle("on", level > i);
+    nodes[i].querySelector(".circle").classList.toggle("on", level > i);
+  }
+}
+try { var saved = localStorage.getItem("wodCode"); if (saved) { $("tq").value = saved; } } catch(e) {}
+if (location.hash === "#track") {
+  $("f").hidden = true; $("newrep").hidden = false;
+  document.getElementById("trackBox").scrollIntoView();
+  if ($("tq").value) { checkStatus(); }
+}
+$("newrep").addEventListener("click", function(){ $("f").hidden = false; $("newrep").hidden = true; history.replaceState(null, "", location.pathname); });
 </script>
 </body>
 </html>
