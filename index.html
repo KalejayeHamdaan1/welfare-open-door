@@ -211,11 +211,11 @@ function checkStatus(){
       if ((rows[i][0] || "").trim().toUpperCase() === id) { found = rows[i]; break; }
     }
     if (found) {
-      var st = (found[3] || "").trim();
+      var st = (found[found.length - 1] || "").trim();
       var lv = {received:1, verified:2, forwarded:3, resolved:4}[st.toLowerCase()] || 0;
       setSteps(lv);
       $("stp").hidden = false;
-      out.textContent = (st || "Awaiting review") + " · " + (found[2] || "") + " · " + (found[1] || "");
+      out.textContent = "Status: " + (st || "Awaiting review") + (found.length >= 3 && found[1] ? " · " + found[1] : "");
     } else {
       out.textContent = "We could not find that number yet. Check the spelling, and note that updates can take a few minutes to appear.";
     }
