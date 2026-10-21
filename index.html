@@ -38,6 +38,14 @@ button.alt,.btn.alt{background:transparent;color:var(--accent);border:1px solid 
 .stp .circle{width:29px;height:29px;border-radius:50%;background:var(--line);color:var(--mute);display:flex;align-items:center;justify-content:center;font:700 .85rem system-ui,sans-serif;margin-bottom:5px}
 .stp .seg.on,.stp .circle.on{background:#2e9e5b;color:#fff}
 .stp .node.on{color:var(--ink);font-weight:600}
+.bwrap{background:var(--line);border-radius:5px;margin:4px 0 12px}
+.bar{height:10px;border-radius:5px;background:#2e9e5b}
+.dl{font:.88rem system-ui,sans-serif}
+.dg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.dc{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px;text-align:center}
+.dn{font:700 1.8rem system-ui,sans-serif;color:#2e9e5b}
+.dt{font:600 .85rem system-ui,sans-serif}
+.dtt{font:.75rem system-ui,sans-serif;color:var(--mute)}
 .warnbox{background:var(--bg);border:1px solid var(--warn);border-radius:8px;padding:10px 12px;font:.92rem system-ui,sans-serif;margin:12px 0}
 [hidden]{display:none!important}
 </style>
@@ -48,6 +56,13 @@ button.alt,.btn.alt{background:transparent;color:var(--accent);border:1px solid 
   <h1>Welfare Open Door</h1>
   <p class="tag">Every student, every complaint, every update.</p>
   <p>Report a welfare problem in your hostel or on campus. Each complaint gets a tracking number, is verified, and is forwarded through the proper office.</p>
+ 
+  <div class="track" id="dash" hidden style="margin:18px 0">
+    <b>Today’s welfare activity</b>
+    <p class="note" id="ddate"></p>
+    <div class="dg" id="dh"></div>
+    <p class="note">Every complaint is received and acknowledged within 3 hours. Counts only: no names or personal details are shown.</p>
+  </div>
  
   <div class="steps"><div><b>1</b>Received</div><div><b>2</b>Verified</div><div><b>3</b>Forwarded</div><div><b>4</b>Resolved</div></div>
  
@@ -99,6 +114,10 @@ button.alt,.btn.alt{background:transparent;color:var(--accent);border:1px solid 
     <label for="phone">Phone or WhatsApp number</label>
     <input id="phone" type="tel" autocomplete="tel" required>
     <p class="note" style="margin-top:6px">Used only to send you updates on this complaint.</p>
+ 
+    <label for="email">Email address</label>
+    <input id="email" type="email" autocomplete="email" placeholder="you@example.com">
+    <p class="note" style="margin-top:6px">We will email you when your complaint is received, verified, forwarded and resolved.</p>
  
     <button type="submit">Get my tracking number</button>
     <p class="note">Please keep it honest and respectful: no rumors or personal attacks. Only the Welfare Office team sees your details.</p>
@@ -169,6 +188,7 @@ $("f").addEventListener("submit", function(e){
   add("2095539584", $("name").value);
   add("201971084", $("level").value);
   add("1826501893", $("phone").value);
+  add("280455412", $("email").value);
   $("gf").href = FORM + "?usp=pp_url&" + q.join("&");
   var wa = "Welfare Open Door\nTracking: " + code + "\nPhotos for my complaint (" + $("type").value + ", " + $("where").value + ")";
   $("wa").href = "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(wa);
@@ -245,6 +265,26 @@ function applyTrackMode(){
 applyTrackMode();
 window.addEventListener("hashchange", applyTrackMode);
 $("newrep").addEventListener("click", function(){ $("f").hidden = false; $("newrep").hidden = true; history.replaceState(null, "", location.pathname); });
+ 
+var STATS_CSV = ""; // published Stats tab as CSV, added when ready
+function loadDash(){
+  if (!STATS_CSV) return;
+  fetch(STATS_CSV + "&t=" + Date.now()).then(function(r){ if (!r.ok) throw new Error("bad"); return r.text(); }).then(function(t){
+    var rows = parseCSV(t).slice(1), box = $("dh"), i, c, a, b, n;
+    box.textContent = "";
+    for (i = 0; i < rows.length; i++) {
+      if (!rows[i][0]) continue;
+      c = document.createElement("div"); c.className = "dc";
+      a = document.createElement("div"); a.className = "dn"; a.textContent = rows[i][1] || "0";
+      b = document.createElement("div"); b.className = "dt"; b.textContent = rows[i][0] + " today";
+      n = document.createElement("div"); n.className = "dtt"; n.textContent = "Total: " + (rows[i][2] || "0");
+      c.appendChild(a); c.appendChild(b); c.appendChild(n); box.appendChild(c);
+    }
+    $("ddate").textContent = new Date().toLocaleDateString(undefined, {weekday: "long", day: "numeric", month: "long", year: "numeric"});
+    $("dash").hidden = false;
+  }).catch(function(){});
+}
+loadDash();
 </script>
 </body>
 </html>
